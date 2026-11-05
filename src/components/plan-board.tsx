@@ -8,6 +8,7 @@ import {
   IconCheck,
   IconChevron,
   IconClose,
+  IconGrip,
   IconInfo,
   IconLock,
   IconMore,
@@ -26,10 +27,10 @@ import {
   loadFor,
   registration,
   semesterLabel,
-  specializationOptions,
   type Course,
   type Semester,
 } from "@/lib/courses";
+import { completedCourses } from "@/lib/hci-requirements";
 import { usePlan } from "@/lib/plan-context";
 
 export function PlanBoard() {
@@ -45,7 +46,6 @@ export function PlanBoard() {
     clearSemester,
     addYear,
     removeYear,
-    setSpecialization,
     undo,
     save,
   } = usePlan();
@@ -70,9 +70,11 @@ export function PlanBoard() {
     [semesters],
   );
 
+  const completedCodes = useMemo(() => new Set(completedCourses.map((course) => course.code)), []);
+
   const filtered = useMemo(() => {
     const list = courses.filter((course) => {
-      if (plannedIds.has(course.id)) return false;
+      if (plannedIds.has(course.id) || completedCodes.has(course.code)) return false;
       if (openOnly && !course.openSeats) return false;
       if (specializationFilter !== "All specializations" && course.specialization !== specializationFilter) {
         return false;
@@ -81,7 +83,7 @@ export function PlanBoard() {
     });
     list.sort((a, b) => a.code.localeCompare(b.code, undefined, { numeric: true }) * (ascending ? 1 : -1));
     return list;
-  }, [ascending, openOnly, plannedIds, specializationFilter]);
+  }, [ascending, completedCodes, openOnly, plannedIds, specializationFilter]);
 
   const visible = expanded ? filtered : filtered.slice(0, 3);
   const totalLoad = loadFor(semesters.flatMap((semester) => semester.courseIds));
@@ -164,10 +166,13 @@ export function PlanBoard() {
         </div>
         <div className="flex items-center gap-3">
           <Pill tone="sand">{registration.status}</Pill>
-          <Link href="/registration" className={buttonClass.secondary}>
+          <span
+            className={cx(buttonClass.secondary, "cursor-default")}
+            title="Registration is locked until your time ticket"
+          >
             <IconLock className="size-3.5" />
             Registration locked
-          </Link>
+          </span>
         </div>
       </section>
 
@@ -302,32 +307,11 @@ export function PlanBoard() {
           </div>
 
           <div className="mt-5 rounded-2xl bg-navy p-5 text-white">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <p className="text-[11px] font-semibold tracking-[0.16em] text-white/60">
-                  DEGREE & SPECIALIZATION
-                </p>
-                <p className="mt-2 text-lg font-semibold">{degreeTitle(specialization)}</p>
-              </div>
-              <Menu
-                ariaLabel="Change specialization"
-                triggerClassName="inline-flex items-center gap-1 rounded-lg border border-white/20 px-3 py-1.5 text-sm font-semibold text-white hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
-                label={
-                  <>
-                    Change
-                    <IconChevron className="size-4" />
-                  </>
-                }
-              >
-                {specializationOptions.map((option) => (
-                  <MenuItem key={option} onClick={() => setSpecialization(option)}>
-                    <span className="flex items-center justify-between gap-3">
-                      {option}
-                      {option === specialization ? <IconCheck className="size-4 text-sage" /> : null}
-                    </span>
-                  </MenuItem>
-                ))}
-              </Menu>
+            <div>
+              <p className="text-[11px] font-semibold tracking-[0.16em] text-white/60">
+                DEGREE & SPECIALIZATION
+              </p>
+              <p className="mt-2 text-lg font-semibold">{degreeTitle(specialization)}</p>
             </div>
             <div className="mt-5 flex items-center justify-between text-sm text-white/80">
               <span>Degree completed</span>
@@ -456,7 +440,12 @@ function CatalogCard({
       }}
     >
       <div className="flex items-start justify-between gap-3">
-        <p className="text-sm font-semibold text-navy">{course.code}</p>
+        <p className="flex items-center gap-2 text-sm font-semibold text-navy">
+          <span title="Drag to move" className="inline-flex text-muted" aria-hidden>
+            <IconGrip className="size-4 shrink-0" />
+          </span>
+          {course.code}
+        </p>
         <Pill tone={course.openSeats ? "sage" : "gray"}>
           {course.openSeats ? "Open seats" : "No open seats"}
         </Pill>
@@ -548,7 +537,12 @@ function SemesterColumn({
             }}
           >
             <div className="flex items-start justify-between gap-2">
-              <p className="text-sm font-semibold text-navy">{course.code}</p>
+              <p className="flex items-center gap-2 text-sm font-semibold text-navy">
+                <span title="Drag to move" className="inline-flex text-muted" aria-hidden>
+                  <IconGrip className="size-4 shrink-0" />
+                </span>
+                {course.code}
+              </p>
               <button
                 type="button"
                 aria-label={`Remove ${course.code}`}

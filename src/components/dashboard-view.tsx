@@ -5,7 +5,7 @@ import { IconArrow, IconInfo } from "@/components/icons";
 import { MilestonesCard } from "@/components/milestones";
 import { SemesterRows } from "@/components/semester-rows";
 import { PageIntro, Pill, buttonClass } from "@/components/ui";
-import { degreeProgress, loadFor, pageLede, registration } from "@/lib/courses";
+import { degreeProgress, loadFor, pageLede, registration, studentSpecialization } from "@/lib/courses";
 import { usePlan } from "@/lib/plan-context";
 
 export function DashboardView() {
@@ -40,7 +40,10 @@ export function DashboardView() {
 
         <section className="rounded-2xl border border-line bg-white p-6 shadow-[0_8px_30px_rgba(16,40,64,0.04)]">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-lg font-semibold text-navy">Your degree progress</h2>
+            <div>
+              <h2 className="text-lg font-semibold text-navy">Your degree progress</h2>
+              <p className="text-sm text-muted">{studentSpecialization}</p>
+            </div>
             <Link href="/degree-requirements" className="text-sm font-semibold text-navy hover:underline">
               View requirements →
             </Link>

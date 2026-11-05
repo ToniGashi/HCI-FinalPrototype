@@ -50,21 +50,25 @@ export function Shell({ children }: { children: ReactNode }) {
           <nav className="hidden items-center gap-6 text-sm font-medium lg:flex">
             {links.map((link) => {
               const active = pathname === link.href;
+              if (link.locked) {
+                return (
+                  <span
+                    key={link.href}
+                    className="inline-flex items-center gap-1.5 text-white/50"
+                    title="Registration is locked until your time ticket"
+                  >
+                    <IconLock className="size-3.5" />
+                    {link.label}
+                  </span>
+                );
+              }
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={
-                    link.locked
-                      ? "inline-flex items-center gap-1.5 text-white/50"
-                      : active
-                        ? "text-white"
-                        : "text-white/75 transition hover:text-white"
-                  }
+                  className={active ? "text-white" : "text-white/75 transition hover:text-white"}
                   aria-current={active ? "page" : undefined}
-                  title={link.locked ? "Registration is locked until your time ticket" : undefined}
                 >
-                  {link.locked ? <IconLock className="size-3.5" /> : null}
                   {link.label}
                 </Link>
               );
@@ -115,7 +119,8 @@ export function Shell({ children }: { children: ReactNode }) {
               <div className="px-3 py-2 text-sm leading-5" onClick={(event) => event.stopPropagation()}>
                 <p className="font-semibold text-navy">My account</p>
                 <p className="mt-1 text-muted">
-                  Drafts stay in this browser. This prototype is not signed in to Georgia Tech.
+                  OMSCS student in the Human-Computer Interaction specialization. Drafts stay in this
+                  browser. This prototype is not connected to Georgia Tech.
                 </p>
               </div>
             </Menu>
@@ -136,17 +141,28 @@ export function Shell({ children }: { children: ReactNode }) {
           <nav className="flex flex-col gap-1 border-t border-white/10 px-5 py-3 lg:hidden">
             {links.map((link) => {
               const active = pathname === link.href;
+              if (link.locked) {
+                return (
+                  <span
+                    key={link.href}
+                    className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-white/50"
+                    title="Registration is locked until your time ticket"
+                  >
+                    <IconLock className="size-3.5" />
+                    {link.label}
+                  </span>
+                );
+              }
               return (
                 <Link
                   key={link.href}
                   href={link.href}
                   className={cx(
                     "inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium",
-                    link.locked ? "text-white/50" : active ? "bg-white/10 text-white" : "text-white/80",
+                    active ? "bg-white/10 text-white" : "text-white/80",
                   )}
                   aria-current={active ? "page" : undefined}
                 >
-                  {link.locked ? <IconLock className="size-3.5" /> : null}
                   {link.label}
                 </Link>
               );

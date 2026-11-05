@@ -40,6 +40,8 @@ export const degreeProgress = {
   status: "On Track",
 };
 
+export const studentSpecialization = "Human-Computer Interaction";
+
 export const specializationOptions = [
   "OMSCS",
   "Computing Systems",

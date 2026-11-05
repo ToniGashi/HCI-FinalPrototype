@@ -11,6 +11,7 @@ import {
 } from "react";
 import {
   initialSemesters,
+  studentSpecialization,
   type Semester,
   type Season,
 } from "@/lib/courses";
@@ -74,7 +75,7 @@ function readSnapshot(): Snapshot | null {
       ];
     });
     if (semesters.length === 0) return null;
-    return { semesters, specialization: parsed.specialization };
+    return { semesters, specialization: studentSpecialization };
   } catch {
     return null;
   }
@@ -86,7 +87,7 @@ function sameSnapshot(a: Snapshot, b: Snapshot) {
 
 export function PlanProvider({ children }: { children: ReactNode }) {
   const [semesters, setSemesters] = useState<Semester[]>(initialSemesters);
-  const [specialization, setSpecializationState] = useState("OMSCS");
+  const [specialization, setSpecializationState] = useState(studentSpecialization);
   const [saved, setSaved] = useState<Snapshot | null>(null);
   const [history, setHistory] = useState<Snapshot[]>([]);
   const [saveError, setSaveError] = useState<string | null>(null);
